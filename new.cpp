@@ -3,19 +3,13 @@
 #include <string>
 using namespace std;
 
-struct Address {
-    string city;
-    string state;
-    int pin;
-};
 struct Student {
     int roll;
     string name;
     int age;
-    Address addr;
-    int marks[6];
-    int subjects;
+    int marks1, marks2, marks3;
 };
+
 void enterStudent(Student &s) {
     cout << "\nEnter Roll Number: ";
     cin >> s.roll;
@@ -27,108 +21,74 @@ void enterStudent(Student &s) {
     cout << "Enter Age: ";
     cin >> s.age;
 
-    cin.ignore();
-    cout << "Enter City: ";
-    getline(cin, s.addr.city);
-
-    cout << "Enter State: ";
-    getline(cin, s.addr.state);
-
-    cout << "Enter Pin Code: ";
-    cin >> s.addr.pin;
-
-    cout << "How many subjects? (max 6): ";
-    cin >> s.subjects;
-    if (s.subjects > 6)
-        s.subjects = 6;
-
-    for (int i = 0; i < s.subjects; i++) {
-        cout << "Enter marks for subject " << i + 1 << ": ";
-        cin >> s.marks[i];
-    }
+    cout << "Enter Marks for 3 Subjects:\n";
+    cout << "Subject 1: ";
+    cin >> s.marks1;
+    cout << "Subject 2: ";
+    cin >> s.marks2;
+    cout << "Subject 3: ";
+    cin >> s.marks3;
 }
+
 void showStudent(Student s) {
-    
-    cout << "Roll No: " << s.roll << endl;
+    cout << "\nRoll No: " << s.roll << endl;
     cout << "Name: " << s.name << endl;
     cout << "Age: " << s.age << endl;
-    cout << "City: " << s.addr.city << endl;
-    cout << "State: " << s.addr.state << endl;
-    cout << "Pin: " << s.addr.pin << endl;
+    cout << "Marks: " << s.marks1 << ", " << s.marks2 << ", " << s.marks3 << endl;
 
-    int total = 0;
-    cout << "Marks: ";
-    for (int i = 0; i < s.subjects; i++) {
-        cout << s.marks[i] << " ";
-        total += s.marks[i];
-    }
-    float avg = (float)total / s.subjects;
-    cout << "\nTotal Marks: " << total;
-    cout << "\nAverage Marks: " << avg << endl;
-    
+    int total = s.marks1 + s.marks2 + s.marks3;
+    float avg = total / 3.0;
+    cout << "Total Marks: " << total << endl;
+    cout << "Average Marks: " << avg << endl;
 }
 
-
-void saveData(Student st[], int n) {
+void saveData(Student s[], int count) {
     ofstream file("students.txt");
     if (!file) {
-        cout << "Error opening file for saving!" << endl;
+        cout << "Error opening file!" << endl;
         return;
     }
 
-    for (int i = 0; i < n; i++) {
-        file << st[i].roll << " " << st[i].name << " " << st[i].age << " "
-             << st[i].addr.city << " " << st[i].addr.state << " " << st[i].addr.pin << " "
-             << st[i].subjects << " ";
-        for (int j = 0; j < st[i].subjects; j++) {
-            file << st[i].marks[j] << " ";
-        }
-        file << endl;
+    for (int i = 0; i < count; i++) {
+        file << s[i].roll << " " << s[i].name << " " << s[i].age << " "
+             << s[i].marks1 << " " << s[i].marks2 << " " << s[i].marks3 << endl;
     }
 
     file.close();
-    cout << "\nData saved to file successfully.\n";
+    cout << "\nData saved successfully to file!\n";
 }
 
-int loadData(Student st[], int max) {
+int loadData(Student s[], int max) {
     ifstream file("students.txt");
     if (!file) {
-        cout << "No file found or error reading file!" << endl;
+        cout << "No file found or error reading file!\n";
         return 0;
     }
 
     int count = 0;
-    while (file >> st[count].roll) {
-        file >> st[count].name >> st[count].age
-             >> st[count].addr.city >> st[count].addr.state >> st[count].addr.pin
-             >> st[count].subjects;
-        for (int i = 0; i < st[count].subjects; i++) {
-            file >> st[count].marks[i];
-        }
+    while (file >> s[count].roll >> s[count].name >> s[count].age
+           >> s[count].marks1 >> s[count].marks2 >> s[count].marks3) {
         count++;
         if (count >= max)
             break;
     }
+
     file.close();
-    cout << "\nData loaded from file successfully.\n";
+    cout << "\nData loaded successfully from file!\n";
     return count;
 }
 
-
-void showTopper(Student st[], int n) {
+void showTopper(Student s[], int n) {
     if (n == 0) {
         cout << "No student data available!" << endl;
         return;
     }
 
     int topIndex = 0;
-    int topMarks = 0;
+    int topMarks = s[0].marks1 + s[0].marks2 + s[0].marks3;
 
-    for (int i = 0; i < n; i++) {
-        int total = 0;
-        for (int j = 0; j < st[i].subjects; j++) {
-            total += st[i].marks[j];
-        }
+    for (int i = 1; i < n; i++) {
+        int total = s[i].marks1 + s[i].marks2 + s[i].marks3;
         if (total > topMarks) {
             topMarks = total;
             topIndex = i;
@@ -136,7 +96,7 @@ void showTopper(Student st[], int n) {
     }
 
     cout << "\nTop Scorer:\n";
-    showStudent(st[topIndex]);
+    showStudent(s[topIndex]);
 }
 
 int main() {
@@ -161,7 +121,7 @@ int main() {
                     enterStudent(s[count]);
                     count++;
                 } else {
-                    cout << "Maximum student limit reached!" << endl;
+                    cout << "Maximum student limit reached!\n";
                 }
                 break;
 
@@ -188,7 +148,7 @@ int main() {
                 break;
 
             default:
-                cout << "Invalid choice! Please try again.\n";
+                cout << "Invalid choice! Try again.\n";
         }
 
     } while (choice != 0);
